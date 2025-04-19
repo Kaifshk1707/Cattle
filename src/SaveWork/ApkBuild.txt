@@ -1,0 +1,8 @@
+1. npm i -g eas-cli
+2. eas login
+3. email or username: kaifshk1707@gmail.com
+4.password: kaifshk1
+5. eas whoami=> kaifshk17
+6.  eas build:configure, press yes
+7. npx expo install --check . for check the version of expo
+8. eas -p android --profile preview

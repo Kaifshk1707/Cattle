@@ -1,0 +1,82 @@
+import { View, Text, Button } from "react-native";
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const App = () => {
+  const [counter, setCounter] = useState(0);
+
+  // store data
+  const storeData = async (value) => {
+    try {
+      await AsyncStorage.setItem("totalCount", value);
+    } catch (e) {}
+  };
+
+  // get data
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem("totalCount");
+      if (value !== null) {
+        console.log("Value from storage: ", value);
+        setCounter(+value) // plus sign is used to convert string to number
+      }
+    } catch (e) {}
+  };
+
+  useEffect(()=>{
+    getData();
+  },[])
+
+  // clear data
+  const removeData = async () => {
+    try {
+      await AsyncStorage.removeItem("totalCount");
+      setCounter(0); // Uncomment if you want to reset the counter in your state
+    } catch (error) {
+      console.log("Error removing data: ", error);
+    }
+  };
+
+
+  // add data
+  const IncreaseSaveLocal = () => {
+    const commonCounter = counter + 1;
+    setCounter(commonCounter);
+    storeData(commonCounter.toString());
+  };
+
+  return (
+    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+      <Button title="Increase" onPress={IncreaseSaveLocal} />
+      <Text style={{ fontSize: 24, fontWeight: "bold" }}>Total: {counter}</Text>
+      <Button title="Clear" onPress={removeData} />
+    </View>
+  );
+};
+
+export default App;
+
+another wroking code===========
+  const { userData, isLoading } = useSelector(
+    (state: RootState) => state.UserSlice
+  );
+
+  const isLoggedIn = async () => {
+    try {
+      const storedData = await AsyncStorage.getItem("user_Data");
+      console.log("Stored Data:", storedData);
+
+      if (storedData) {
+        dispatch(setUserData(JSON.parse(storedData)));
+      }else{
+        dispatch(setLoading(false));
+      }
+    } catch (error) {
+      console.log("Error checking login status:", error);
+        dispatch(setLoading(false));
+    }
+  };
+
+  useEffect(() => {
+    isLoggedIn();
+  }, []);
