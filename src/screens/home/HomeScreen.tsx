@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,8 @@ import {
 } from "react-native";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
+import { getMedicinetData } from "../../config/dataServices";
+import DashBoardHeader from "../../components/headers/DashBoardHeader";
 
 interface HomeData {
   SettingScreen: string;
@@ -18,6 +20,17 @@ const HomeScreen: FC<HomeData> = () => {
   const [selectedManager, setSelectedManager] = useState("User2");
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [medicineData, setMedicineData] = useState<any[] | undefined>([]);
+
+  const fetchData =async ()=>{
+    const response = await getMedicinetData();
+    setMedicineData(response);
+    console.log("response", response);
+  }
+
+  useEffect(()=>{
+    fetchData()
+  },[])
 
   const HomeData = [
     { id: 1, title: "Total Customers", count: 7, color: "#B0BEC5" },
@@ -39,31 +52,12 @@ const HomeScreen: FC<HomeData> = () => {
       {/* Header Section */}
       <HomeHeader title={"DashBoard"} />
       {/* Home Summary Cards */}
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginBottom: 15,
-        }}
-      >
-        {HomeData.map((item) => (
-          <View
-            key={item.id}
-            style={{
-              flex: 1,
-              marginHorizontal: 5,
-              backgroundColor: item.color,
-              padding: 15,
-              borderRadius: 10,
-            }}
-          >
-            <Text style={{ fontSize: 18, color: "#fff", fontWeight: "bold" }}>
-              {item.count}
-            </Text>
-            <Text style={{ fontSize: 14, color: "#fff" }}>{item.title}</Text>
-          </View>
-        ))}
-      </View>
+      <DashBoardHeader
+        totalCustomers={"0"}
+        totalMedicines={medicineData?.length}
+        totalInward={"0"}
+        totalOutward={"0"}
+      />
 
       {/* Medicines Stock Section */}
       <View
@@ -95,8 +89,8 @@ const HomeScreen: FC<HomeData> = () => {
 
         {/* Stock Table */}
         <FlatList
-          data={medicinesStock}
-          keyExtractor={(item) => item.id.toString()}
+          data={medicineData}
+          keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View
               style={{
@@ -107,7 +101,7 @@ const HomeScreen: FC<HomeData> = () => {
                 borderBottomColor: "#ddd",
               }}
             >
-              <Text>{item.medicine}</Text>
+              <Text>{item.title}</Text>
               <Text>{item.stock}</Text>
               <Text style={{ color: "red" }}>{item.status}</Text>
             </View>
