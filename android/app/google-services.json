@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "999476150925",
+    "project_id": "cattle-app-d5b6a",
+    "storage_bucket": "cattle-app-d5b6a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:999476150925:android:50a9fe99dd4c4d9396d8c4",
+        "android_client_info": {
+          "package_name": "com.kaifshk17.Cattle"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "999476150925-d56ci1ak416emfamk242cuq4g895mcq0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kaifshk17.Cattle",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "999476150925-t8hft4g2p6mgoldcsr5iur2mmvtt86j9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpTxFiFGt3tVdonEAhIagGK3jAB4aZNos"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "999476150925-t8hft4g2p6mgoldcsr5iur2mmvtt86j9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

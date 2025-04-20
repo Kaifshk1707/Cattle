@@ -1,4 +1,11 @@
-import { Alert, Image, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React, { useState } from "react";
 import { sharePaddingHorizontalStyle } from "../../styles/shareStyle";
 import AppAreaView from "../../components/view/safeAreaView";
@@ -7,124 +14,63 @@ import { s, vs } from "react-native-size-matters";
 import AppTextInput from "../../components/inputs/AppTextInput";
 import AppButton from "../../components/buttons/AppButton";
 import { globalColor } from "../../styles/globalColor";
-import AppTextInputController from "../../components/inputs/AppTextInputController";
-import { useForm } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../config/firebase";
-import { showMessage } from "react-native-flash-message";
-import { useDispatch } from "react-redux";
-import { setUserData } from "../../redux/reducers/UserSlice";
-import { useTranslation } from "react-i18next";
-
+import { auth } from "./../../config/firebase";
 
 const SignUpScreen = () => {
-  const { t } = useTranslation();
-
-  const Schema = yup.object({
-    userName: yup
-      .string()
-      .required(t("sign_up_username_required"))
-      .min(4, t("sign_up_username_min_length")),
-
-    email: yup
-      .string()
-      .required(t("sign_in_email_required"))
-      .email(t("sign_in_email_invalid")),
-    password: yup
-      .string()
-      .required(t("sign_in_password_required"))
-      .min(6, t("sign_in_password_min_length")),
-  });
-
-
-
   const navigation = useNavigation();
-  const dispatch = useDispatch();
-  const { control, handleSubmit } = useForm({
-    resolver: yupResolver(Schema),
-  });
-  type newData = yup.InferType<typeof Schema>;
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleCreate = async (newData: newData) => {
-    try {
-      const userCredentials = await createUserWithEmailAndPassword(
-        auth,
-        newData.email,
-        newData.password
-      );
-      Alert.alert(t("sign_up_success"));
-      // showMessage({
-      //   type: "success",
-      //   message: "Account has been created, Successfully",
-      //   icon: "success",
-      //   duration: 3000,
-      // });
-      navigation.navigate("MainAppBottomTab");
-
-        const userDataObj = {
-              uid: userCredentials.user.uid,
-            }
-      
-            dispatch(setUserData(userDataObj));
-      return userCredentials.user;
-      
-    } catch (error: any) {
-      let errorMessage = "";
-      if (error.code === "auth/email-already-in-use") {
-        errorMessage = t("sign_up_error_email_in_use");
-      } else if (error.code === "auth/invalid-email") {
-        errorMessage = t("sign_up_error_invalid_email");
-      } else if (error.code === "auth/weak-password") {
-        errorMessage = t("sign_up_error_weak_password");
-      } else {
-        errorMessage = t("sign_up_error_default");
-      }
-      // showMessage({
-      //   type: "danger",
-      //   message: errorMessage,
-      //   icon: "danger",
-      //   duration: 3000,
-      // });
-      Alert.alert(errorMessage);
-    }
+  const handleSignup = () => {
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(() => {
+        Alert.alert("Success", "Account has been created!" + email);
+        navigation.navigate("MainAppBottomTab");
+      })
+      .catch((error) => {
+        Alert.alert(error.nativeErrorMessage);
+      });
   };
 
   return (
     <AppAreaView style={styles.container}>
       <Image style={styles.imageStyle} source={IMAGES.AppLogo} />
-      <AppTextInputController
-        control={control}
-        name={"userName"}
-        placeholder={t("sign_up_username_placeholder")}
-        keyboardType={"default"}
+      <AppTextInput
+        value={email}
+        placeholder="Email"
+        onChangeText={setEmail}
+        style={{ borderWidth: 1, marginBottom: 10 }}
       />
-      <AppTextInputController
-        control={control}
-        name={"email"}
-        placeholder={t("sign_in_email_placeholder")}
-        keyboardType={"default"}
-      />
-      <AppTextInputController
-        control={control}
-        name={"password"}
-        placeholder={t("sign_in_password_placeholder")}
-        keyboardType={"default"}
+      <AppTextInput
+        value={password}
+        placeholder="Password"
+        onChangeText={setPassword}
         secureTextEntry
+        style={{ borderWidth: 1, marginBottom: 10 }}
+      />
+      <AppTextInput
+        value={confirmPassword}
+        placeholder="Confirm password"
+        onChangeText={setConfirmPassword}
+        secureTextEntry
+        style={{ borderWidth: 1, marginBottom: 10 }}
       />
       <AppButton
-        title={t("sign_up_create_account_button")}
+        title={"Create Account"}
         style={{ width: vs(250) }}
-        onPress={handleSubmit(handleCreate)}
+        onPress={handleSignup}
       />
-      <AppButton
-        title={t("sign_up_goto_signin_button")}
-        style={styles.SignInButton}
-        textColor={globalColor.blueGray}
-        onPress={() => navigation.goBack("SignInScreen")}
-      />
+      <View style={styles.signInContainer}>
+        <Text style={styles.signInText}>
+          Already have an account?{" "}
+          <Text style={styles.signInLink} onPress={() => navigation.goBack()}>
+            Login
+          </Text>
+        </Text>
+      </View>
     </AppAreaView>
   );
 };
@@ -151,5 +97,19 @@ const styles = StyleSheet.create({
     backgroundColor: globalColor.white,
     color: globalColor.blueGray,
     width: vs(250),
+  },
+  signInContainer: {
+    marginTop: vs(15),
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  signInText: {
+    fontSize: s(15),
+    color: globalColor.blueGray,
+  },
+  signInLink: {
+    color: globalColor.gray,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
   },
 });
