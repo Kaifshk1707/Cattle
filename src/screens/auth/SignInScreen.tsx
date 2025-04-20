@@ -102,7 +102,6 @@
             </Text>
           </Text>
         </View>
-        <Button title="Login with google" onPress={onGoogleButtonPress} />
 
         <View
           style={{
@@ -119,7 +118,7 @@
               style={{ width: s(63), height: s(63), resizeMode: "contain" }}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => Alert.alert("Google Sign In")}>
+          <TouchableOpacity onPress={onGoogleButtonPress}>
             <Image
               source={IMAGES.google}
               style={{ width: s(58), height: s(58), resizeMode: "contain" }}
