@@ -54,7 +54,7 @@ const HomeScreen: FC<HomeData> = () => {
       {/* Home Summary Cards */}
       <DashBoardHeader
         totalCustomers={"0"}
-        totalMedicines={medicineData?.length}
+        totalMedicines={medicineData?.length ? "0" : "0"}
         totalInward={"0"}
         totalOutward={"0"}
       />

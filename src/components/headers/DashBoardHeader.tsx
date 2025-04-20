@@ -3,7 +3,7 @@ import React, { FC } from "react";
 
 interface DashBoardHeaderProps {
   totalCustomers: string;
-  totalMedicines: number | undefined;
+  totalMedicines: string | number | undefined;
   totalInward: string;
   totalOutward: string;
 }
