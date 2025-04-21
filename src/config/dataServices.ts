@@ -15,6 +15,32 @@ export const getMedicinetData = async () => {
   }
 };
 
+export const getManageMedicine = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "manageMedicine"));
+    const list = [];
+    querySnapshot.forEach((docs) => {
+      list.push(docs.data());
+    });
+    return list;
+  } catch (error) {
+    console.error("Error fetching medicine data:", error);
+  }
+};
+
+export const getManageUser = async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "manageUser"));
+    const list = [];
+    querySnapshot.forEach((docs) => {
+      list.push(docs.data());
+    });
+    return list;
+  } catch (error) {
+    console.error("Error fetching medicine data:", error);
+  }
+};
+
 export const fetchUserData = async () => {
   try {
     const userIdFromRedux = store.getState().UserSlice.userData.uid; // this is the global state return id

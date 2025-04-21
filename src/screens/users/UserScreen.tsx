@@ -13,11 +13,13 @@ import EditManagerModal from "../../components/Modal/EditManagerModal";
 import { useDispatch, useSelector } from "react-redux";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
+import { getManageUser } from "../../config/dataServices";
 
 const Users = ({ navigation }) => {
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
+  const [manageUser, setManageUser] = useState<any[] | undefined>([]);
 
   // const dispatch = useDispatch();
   // const usersDataList = useSelector((state) => state.ManageUserList.data) || [];
@@ -34,17 +36,27 @@ const Users = ({ navigation }) => {
   //   dispatch(userListData());
   // }, []);
 
+  const fetchData = async () => {
+    const response = await getManageUser();
+    setManageUser(response);
+    // console.log("response", response);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const usersData = [
     { id: "1", name: "New Vendor", status: "Active", type: "Vendor" },
-    { id: "2", name: "New User", status: "Active", type: "User" },
+    { id: "2", name: "New User", status: "InActive", type: "User" },
     { id: "3", name: "Kaif", status: "Active", type: "User" },
     { id: "4", name: "Manager1", status: "Active", type: "User" },
     { id: "5", name: "Vendor5", status: "Active", type: "Vendor" },
-    { id: "6", name: "Vendor4", status: "Active", type: "Vendor" },
+    { id: "6", name: "Vendor4", status: "InActive", type: "Vendor" },
     { id: "7", name: "Vendor3", status: "Active", type: "Vendor" },
-    { id: "8", name: "Vendor2", status: "Active", type: "Vendor" },
+    { id: "8", name: "Vendor2", status: "InActive", type: "Vendor" },
     { id: "9", name: "Vendor1", status: "Active", type: "Vendor" },
-    { id: "10", name: "User5", status: "Active", type: "User" },
+    { id: "10", name: "User5", status: "InActive", type: "User" },
     { id: "11", name: "Vendor6", status: "Active", type: "Vendor" },
     { id: "12", name: "User7", status: "Active", type: "User" },
   ];
@@ -53,7 +65,6 @@ const Users = ({ navigation }) => {
     <AppAreaView>
       {/* Header Section */}
       <HomeHeader title={" Manage Users"} />
-      
 
       {/* Search Input */}
       <TextInput
@@ -74,21 +85,72 @@ const Users = ({ navigation }) => {
         style={{
           flexDirection: "row",
           backgroundColor: "#ddd",
-          padding: 10,
-          borderRadius: 5,
+          padding: 14,
+          borderTopLeftRadius: 5,
+          borderTopRightRadius: 5,
         }}
       >
-        <Text style={{ flex: 1, fontWeight: "bold" }}>Sr No</Text>
-        <Text style={{ flex: 2, fontWeight: "bold" }}>User Name</Text>
-        <Text style={{ flex: 1, fontWeight: "bold" }}>Status</Text>
-        <Text style={{ flex: 1, fontWeight: "bold" }}>User Type</Text>
-        <Text style={{ flex: 1, fontWeight: "bold" }}>Action</Text>
+        <Text
+          style={{
+            fontSize: 15,
+            flex: 2,
+            fontWeight: "bold",
+            color: "black",
+            right: 5,
+          }}
+        >
+          Sr No
+        </Text>
+        <Text
+          style={{
+            fontSize: 15,
+            flex: 2,
+            fontWeight: "bold",
+            color: "black",
+            right: 20,
+          }}
+        >
+          User Name
+        </Text>
+        <Text
+          style={{
+            fontSize: 15,
+            flex: 2,
+            left: 20,
+            fontWeight: "bold",
+            color: "black",
+          }}
+        >
+          Status
+        </Text>
+        <Text
+          style={{
+            fontSize: 15,
+            flex: 2,
+            textAlign: "center",
+            fontWeight: "bold",
+            color: "black",
+          }}
+        >
+          User Type
+        </Text>
+        <Text
+          style={{
+            fontSize: 15,
+            flex: 2,
+            textAlign: "center",
+            fontWeight: "bold",
+            color: "black",
+          }}
+        >
+          Action
+        </Text>
       </View>
 
       {/* User List */}
-      {usersData ? (
+      {manageUser ? (
         <FlatList
-          data={usersData}
+          data={manageUser}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => (
             <View
@@ -100,19 +162,30 @@ const Users = ({ navigation }) => {
                 borderBottomColor: "#ddd",
               }}
             >
-              <Text style={{ flex: 1 }}>{index + 1}</Text>
-              <Text style={{ flex: 2 }}>{item.name}</Text>
-              <Text style={{ flex: 1, color: "green", fontWeight: "bold" }}>
-                {item.status}
+              <Text style={{ flex: 1, fontSize: 15 }}>{index + 1}</Text>
+              <Text style={{ flex: 2, fontSize: 15 }}>{item.userName}</Text>
+              <Text
+                style={{
+                  flex: 1,
+                  color: item.status === true ? "green" : "darkred",
+                  fontWeight: "bold",
+                  fontSize: 15,
+                  right: 15,
+                }}
+              >
+                {item.status === true ? "Active" : "Inactive"}
               </Text>
               <Text
                 style={{
                   flex: 1,
-                  color: item.type === "Vendor" ? "orange" : "green",
+                  color: item.userType === true ? "orange" : "green",
                   fontWeight: "bold",
+                  fontSize: 15,
+                  textAlign: "center",
+                  right: 15,
                 }}
               >
-                {item.type}
+                {item.userType === true ? "Vendor" : "User"}
               </Text>
 
               {/* Action Buttons */}
@@ -124,11 +197,12 @@ const Users = ({ navigation }) => {
                     padding: 5,
                     marginRight: 5,
                     borderRadius: 5,
+                    left: 15,
                   }}
                 >
                   <Feather name="edit" size={20} color="black" />
                 </TouchableOpacity>
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={() => setDeleteModal(true)}
                   // onPress={() => {
                   // dispatch(userListData());
@@ -141,7 +215,7 @@ const Users = ({ navigation }) => {
                   }}
                 >
                   <MaterialIcons name="delete" size={20} color="white" />
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
             </View>
           )}

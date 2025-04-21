@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,6 +12,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ManageMedicine from "../../components/Modal/ManageMedicine";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
+import { getManageMedicine } from "../../config/dataServices";
 
 const medicines = [
   { id: "1", name: "Telmikind", stock: 6, status: "Active" },
@@ -30,6 +31,17 @@ const MedicineScreen = () => {
   const [search, setSearch] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [manageMedicine, setManageMedicine] = useState<any[] | undefined>([]);
+
+  const fetchData = async () => {
+    const response = await getManageMedicine();
+    setManageMedicine(response);
+    console.log("response", response);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const filteredMedicines = medicines.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
@@ -52,7 +64,7 @@ const MedicineScreen = () => {
         {item.id}
       </Text>
       <Text style={{ flex: 3, fontSize: 16, fontWeight: "500", color: "#222" }}>
-        {item.name}
+        {item.title}
       </Text>
       <Text
         style={{ flex: 1, textAlign: "center", fontSize: 16, color: "#555" }}
@@ -86,7 +98,7 @@ const MedicineScreen = () => {
         >
           <Feather name="edit" size={20} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() => setDeleteModal(true)}
           style={{
             backgroundColor: "#E53935",
@@ -97,7 +109,7 @@ const MedicineScreen = () => {
           activeOpacity={0.7}
         >
           <MaterialIcons name="delete" size={24} color="white" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </View>
   );
@@ -105,7 +117,7 @@ const MedicineScreen = () => {
   return (
     <AppAreaView>
       {/* Header Section */}
-      <HomeHeader title={" Manage Users"} />
+      <HomeHeader title={" Manage Medicine"} />
       {/* <View style={{ flexDirection: "row", marginTop: 10 }}>
               {["Copy", "CSV", "Excel", "Print"].map((text, index) => (
                 <TouchableOpacity
@@ -204,7 +216,7 @@ const MedicineScreen = () => {
       </View>
 
       <FlatList
-        data={filteredMedicines}
+        data={manageMedicine}
         showsVerticalScrollIndicator={false}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
@@ -300,4 +312,3 @@ const MedicineScreen = () => {
 };
 
 export default MedicineScreen;
-;

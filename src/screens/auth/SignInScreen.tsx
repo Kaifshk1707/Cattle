@@ -69,6 +69,16 @@
         });
     };
 
+    const handleLoginFacebook = () => {
+       navigation.navigate("MainAppBottomTab");
+      Alert.alert("Login with Facebook");
+    }
+
+     const handleLoginThread = () => {
+       navigation.navigate("MainAppBottomTab");
+       Alert.alert("Login with Thread");
+     };
+
     return (
       <AppAreaView style={styles.container}>
         <Image style={styles.imageStyle} source={IMAGES.AppLogo} />
@@ -112,7 +122,7 @@
             gap: s(15),
           }}
         >
-          <TouchableOpacity onPress={() => Alert.alert("Facebook Sign In")}>
+          <TouchableOpacity onPress={handleLoginFacebook}>
             <Image
               source={IMAGES.facebook}
               style={{ width: s(63), height: s(63), resizeMode: "contain" }}
@@ -124,7 +134,7 @@
               style={{ width: s(58), height: s(58), resizeMode: "contain" }}
             />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => Alert.alert("Thread Sign In")}>
+          <TouchableOpacity onPress={handleLoginThread}>
             <Image
               source={IMAGES.thread}
               style={{ width: s(50), height: s(50), resizeMode: "contain" }}

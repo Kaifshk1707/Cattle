@@ -2,10 +2,10 @@ import { View, Text } from "react-native";
 import React, { FC } from "react";
 
 interface DashBoardHeaderProps {
-  totalCustomers: string;
+  totalCustomers: string | number | undefined;
   totalMedicines: string | number | undefined;
-  totalInward: string;
-  totalOutward: string;
+  totalInward: string | number | undefined;
+  totalOutward: string | number | undefined;
 }
 
 const DashBoardHeader: FC<DashBoardHeaderProps> = ({

@@ -9,6 +9,8 @@ import {
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
 import { getMedicinetData } from "../../config/dataServices";
+import { getManageUser } from "../../config/dataServices";
+
 import DashBoardHeader from "../../components/headers/DashBoardHeader";
 
 interface HomeData {
@@ -21,16 +23,28 @@ const HomeScreen: FC<HomeData> = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [medicineData, setMedicineData] = useState<any[] | undefined>([]);
+    const [manageUser, setManageUser] = useState<any[] | undefined>([]);
+  
 
   const fetchData =async ()=>{
     const response = await getMedicinetData();
     setMedicineData(response);
-    console.log("response", response);
+    // console.log("response", response);
   }
 
   useEffect(()=>{
     fetchData()
   },[])
+
+   const fetchManageUser = async () => {
+     const result = await getManageUser();
+     setManageUser(result);
+    //  console.log("kaif", result);
+   };
+  
+    useEffect(() => {
+      fetchManageUser();
+    }, []);
 
   const HomeData = [
     { id: 1, title: "Total Customers", count: 7, color: "#B0BEC5" },
@@ -53,10 +67,10 @@ const HomeScreen: FC<HomeData> = () => {
       <HomeHeader title={"DashBoard"} />
       {/* Home Summary Cards */}
       <DashBoardHeader
-        totalCustomers={"0"}
-        totalMedicines={medicineData?.length ? "0" : "0"}
+        totalCustomers={manageUser?.length || "0"}
+        totalMedicines={medicineData?.length || "0"}
         totalInward={"0"}
-        totalOutward={"0"}
+        totalOutward={"0"} 
       />
 
       {/* Medicines Stock Section */}
