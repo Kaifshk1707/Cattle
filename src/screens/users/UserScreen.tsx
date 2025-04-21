@@ -13,7 +13,7 @@ import EditManagerModal from "../../components/Modal/EditManagerModal";
 import { useDispatch, useSelector } from "react-redux";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
-import { getManageUser } from "../../config/dataServices";
+import { getManageUser } from "../../config/dataServices/ManageUsers";
 
 const Users = ({ navigation }) => {
   const [search, setSearch] = useState("");
@@ -178,7 +178,7 @@ const Users = ({ navigation }) => {
               <Text
                 style={{
                   flex: 1,
-                  color: item.userType === true ? "orange" : "green",
+                  color: item.type === true ? "orange" : "green",
                   fontWeight: "bold",
                   fontSize: 15,
                   textAlign: "center",

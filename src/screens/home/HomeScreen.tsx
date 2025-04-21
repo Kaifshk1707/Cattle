@@ -8,8 +8,8 @@ import {
 } from "react-native";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
-import { getMedicinetData } from "../../config/dataServices";
-import { getManageUser } from "../../config/dataServices";
+import { getMedicinetData } from "../../config/dataServices/MedicineStock";
+// import { getManageUser } from "../../config/dataServices";
 
 import DashBoardHeader from "../../components/headers/DashBoardHeader";
 
@@ -29,22 +29,22 @@ const HomeScreen: FC<HomeData> = () => {
   const fetchData =async ()=>{
     const response = await getMedicinetData();
     setMedicineData(response);
-    // console.log("response", response);
+    // console.log("response=====>", response);
   }
 
   useEffect(()=>{
     fetchData()
   },[])
 
-   const fetchManageUser = async () => {
-     const result = await getManageUser();
-     setManageUser(result);
-    //  console.log("kaif", result);
-   };
+  //  const fetchManageUser = async () => {
+  //    const result = await getManageUser();
+  //    setManageUser(result);
+  //   //  console.log("kaif", result);
+  //  };
   
-    useEffect(() => {
-      fetchManageUser();
-    }, []);
+  //   useEffect(() => {
+  //     fetchManageUser();
+  //   }, []);
 
   const HomeData = [
     { id: 1, title: "Total Customers", count: 7, color: "#B0BEC5" },

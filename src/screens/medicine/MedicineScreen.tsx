@@ -12,7 +12,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ManageMedicine from "../../components/Modal/ManageMedicine";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
-import { getManageMedicine } from "../../config/dataServices";
+import { getManageMedicine } from "../../config/dataServices/manageMedicine";
 
 const medicines = [
   { id: "1", name: "Telmikind", stock: 6, status: "Active" },
@@ -36,7 +36,7 @@ const MedicineScreen = () => {
   const fetchData = async () => {
     const response = await getManageMedicine();
     setManageMedicine(response);
-    console.log("response", response);
+    console.log("kaif", response);
   };
 
   useEffect(() => {
@@ -77,11 +77,11 @@ const MedicineScreen = () => {
           alignItems: "center",
           paddingVertical: 6,
           borderRadius: 5,
-          backgroundColor: item.status === "Active" ? "#4CAF50" : "#FFA726",
+          backgroundColor: item.status === true ? "#4CAF50" : "#FFA726",
         }}
       >
         <Text style={{ color: "white", fontWeight: "bold" }}>
-          {item.status}
+          {item.status === true ? "Active" : "Inactive"}
         </Text>
       </View>
       <View style={{ flexDirection: "row", flex: 2, justifyContent: "center" }}>
