@@ -12,7 +12,7 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ManageMedicine from "../../components/Modal/ManageMedicine";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
-import { getManageMedicine } from "../../config/dataServices/manageMedicine";
+import { getManageMedicine } from "../../config/dataServices/ManageMedicine";
 
 const medicines = [
   { id: "1", name: "Telmikind", stock: 6, status: "Active" },
