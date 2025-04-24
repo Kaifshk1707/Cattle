@@ -23,6 +23,9 @@ import {
 import { getDeleteManageMedicineList } from "../../config/dataServices/ManageMedicine";
 import { globalColor } from "../../styles/globalColor";
 import { useFocusEffect } from "@react-navigation/native";
+import ShimmerPlaceHolder from "react-native-shimmer-placeholder";
+import LinearGradient from "react-native-linear-gradient";
+
 
 const Users = ({ navigation }) => {
   const [search, setSearch] = useState("");
@@ -30,6 +33,8 @@ const Users = ({ navigation }) => {
   const [deleteModal, setDeleteModal] = useState(false);
   const [manageUser, setManageUser] = useState<any[] | undefined>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
+
 
   const dispatch = useDispatch();
 
@@ -49,22 +54,28 @@ const Users = ({ navigation }) => {
     fetchManageUserData();
   }, []);
 
+  const handleUserUpdated = () => {
+    fetchManageUserData(); // Refresh the list after update
+  };
+
 useFocusEffect(
   useCallback(() => {
     fetchManageUserData(); //fetch data every time screen comes into focus
   }, [])
 );
 
-  // Edit User
-  const handleEditUser = async (id: string) => {
-    const updatedUser = {
-      userName: "Updated Manager",
-      userType: true,
-      status: false,
-    };
-    await getEditUserList(id, updatedUser);
-    fetchManageUserData();
-  };
+<ShimmerPlaceHolder
+  LinearGradient={LinearGradient}
+  style={{
+    height: 60,
+    borderRadius: 8,
+    marginBottom: 12,
+    width: "100%",
+  }}
+/>
+
+
+ 
 
   // Delete User
   const handleDeleteUser = async (id: string) => {
@@ -162,11 +173,70 @@ useFocusEffect(
 
       {/* User List */}
       {loading ? (
-  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    <ActivityIndicator size="large" color={globalColor.blueGray} />
-  </View>
-) :
-      (
+        <View style={{ flex: 1, padding: 16 }}>
+          {[...Array(12)].map((_, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 12,
+                paddingHorizontal: 10,
+              }}
+            >
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 4,
+                  marginRight: 10,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  flex: 2,
+                  height: 30,
+                  borderRadius: 4,
+                  marginRight: 10,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  width: 60,
+                  height: 30,
+                  borderRadius: 4,
+                  marginRight: 10,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  width: 60,
+                  height: 30,
+                  borderRadius: 4,
+                  marginRight: 10,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  width: 30,
+                  height: 40,
+                  borderRadius: 6,
+                  marginRight: 5,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{ width: 30, height: 40, borderRadius: 6 }}
+              />
+            </View>
+          ))}
+        </View>
+      ) : (
         <FlatList
           data={manageUser}
           keyExtractor={(item) => item.id}
@@ -186,7 +256,9 @@ useFocusEffect(
                 style={{
                   flex: 1,
                   color:
-                    item.status === true ? globalColor.darkGreen : globalColor.red,
+                    item.status === true
+                      ? globalColor.darkGreen
+                      : globalColor.red,
                   fontWeight: "bold",
                   fontSize: 15,
                   right: 15,
@@ -213,7 +285,10 @@ useFocusEffect(
 
               <View style={{ flex: 1 }}>
                 <TouchableOpacity
-                  onPress={() => handleEditUser(item.id)}
+                  onPress={() => {
+                    setSelectedUser(item);
+                    setModalVisible(true);
+                  }}
                   style={{
                     backgroundColor: globalColor.lightBlue,
                     padding: 3,
@@ -251,7 +326,7 @@ useFocusEffect(
           )}
           contentContainerStyle={{ paddingBottom: 20 }}
         />
-      ) }
+      )}
 
       {/* Floating Add Button */}
       <TouchableOpacity
@@ -342,24 +417,11 @@ useFocusEffect(
       <EditManagerModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
+        selectedUser={selectedUser}
+        onUserUpdated={handleUserUpdated}
       />
     </AppAreaView>
   );
 };
 
 export default Users;
-
-// const usersData = [
-//   { id: "1", name: "New Vendor", status: "Active", type: "Vendor" },
-//   { id: "2", name: "New User", status: "InActive", type: "User" },
-//   { id: "3", name: "Kaif", status: "Active", type: "User" },
-//   { id: "4", name: "Manager1", status: "Active", type: "User" },
-//   { id: "5", name: "Vendor5", status: "Active", type: "Vendor" },
-//   { id: "6", name: "Vendor4", status: "InActive", type: "Vendor" },
-//   { id: "7", name: "Vendor3", status: "Active", type: "Vendor" },
-//   { id: "8", name: "Vendor2", status: "InActive", type: "Vendor" },
-//   { id: "9", name: "Vendor1", status: "Active", type: "Vendor" },
-//   { id: "10", name: "User5", status: "InActive", type: "User" },
-//   { id: "11", name: "Vendor6", status: "Active", type: "Vendor" },
-//   { id: "12", name: "User7", status: "Active", type: "User" },
-// ];

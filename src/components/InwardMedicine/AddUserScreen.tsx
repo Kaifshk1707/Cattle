@@ -22,20 +22,20 @@ const AddUserScreen = ({ navigation }) => {
   const UserTypOptions = ["User", "Vendor"];
 
 const handleSaveUser = async () => {
-  if (!userName.trim()) {
-    Alert.alert("Validation", "Please enter user name");
-    return;
-  }
+  // if (!userName.trim()) {
+  //   Alert.alert("Validation", "Please enter user name");
+  //   return;
+  // }
 
   const newUser = {
     userName,
-    userType: userType === "Vendor", // convert string to boolean
-    status: status === "Active", // convert string to boolean
+    userType: userType === "Vendor", 
+    status: status === "Active", 
   };
 
   try {
     await getAddUserList(newUser);
-    navigation.goBack(); // 👈 go back only after success
+    navigation.goBack(); 
   } catch (error) {
     Alert.alert("Error", "Something went wrong.");
   }

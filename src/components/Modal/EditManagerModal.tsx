@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   View,
@@ -6,98 +6,225 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  Button,
+  TextInput,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { getEditUserList } from "../../config/dataServices/ManageUsers";
 
-const EditManagerModal = ({ modalVisible, setModalVisible }) => {
-  const medicineData = [
-    { medicine: "Anistomin", given: 0, date: "20 March 2025 1:44 PM" },
-    { medicine: "Anistomin", given: 0, date: "20 March 2025 3:29 PM" },
-    { medicine: "Anistomin", given: 1, date: "20 March 2025 3:29 PM" },
-    { medicine: "Anistomin", given: -1, date: "20 March 2025 3:29 PM" },
-  ];
+const EditManagerModal = ({
+  modalVisible,
+  setModalVisible,
+  selectedUser,
+  onUserUpdated,
+}) => {
+  const navigation = useNavigation();
+  const [status, setStatus] = useState("Active");
+  const [userType, setUserType] = useState("User");
+  const [statusVisible, setStatusVisible] = useState(false);
+  const [userTypeVisible, setUserTypeVisible] = useState(false);
+  const [userName, setUserName] = useState("");
+
+  const statusOptions = ["Active", "Inactive"];
+  const UserTypOptions = ["User", "Vendor"];
+
+  const handleEditUser = async () => {
+    const updatedUser = {
+      userName,
+      userType: userType === "Vendor",
+      status: status === "Active",
+    };
+    await getEditUserList(selectedUser.id, updatedUser);
+    setModalVisible(false);
+    onUserUpdated();
+  };
+
+  useEffect(() => {
+    if (selectedUser) {
+      setUserName(selectedUser.userName || "");
+      setUserType(selectedUser.userType ? "Vendor" : "User");
+      setStatus(selectedUser.status ? "Active" : "Inactive");
+    }
+  }, [selectedUser]);
 
   return (
-    <Modal visible={modalVisible} transparent={true} animationType="fade">
-      <TouchableOpacity
-        style={styles.overlay}
-        activeOpacity={1}
-        onPress={() => setModalVisible(false)}
-      >
+    <Modal visible={modalVisible} transparent animationType="fade">
+      <View style={styles.overlay}>
+        <TouchableOpacity
+          style={styles.backgroundTouchable}
+          activeOpacity={1}
+          onPress={() => setModalVisible(false)}
+        />
+
         <View style={styles.modalContainer}>
-          <Text style={styles.title}>Medicine Breakdown</Text>
-          <View style={styles.table}>
-            <View style={styles.tableHeader}>
-              <Text style={styles.headerText}>Medicine</Text>
-              <Text style={styles.headerText}>Given</Text>
-              <Text style={styles.headerText}>Transaction Date</Text>
-            </View>
-            <FlatList
-              data={medicineData}
-              keyExtractor={(item, index) => index.toString()}
-              renderItem={({ item }) => (
-                <View style={styles.tableRow}>
-                  <Text style={styles.rowText}>{item.medicine}</Text>
-                  <Text style={styles.rowText}>{item.given}</Text>
-                  <Text style={styles.rowText}>{item.date}</Text>
-                </View>
-              )}
+          {/* Title */}
+          <Text style={styles.title}>Edit Users</Text>
+
+          {/* User Name Input */}
+          <Text style={styles.label}>User Name</Text>
+          <TextInput
+            placeholder="Enter user name"
+            value={userName}
+            onChangeText={setUserName}
+            style={styles.input}
+          />
+
+          {/* User Type Dropdown */}
+          <Text style={styles.label}>User Type</Text>
+          <TouchableOpacity
+            onPress={() => setUserTypeVisible(!userTypeVisible)}
+            style={styles.dropdown}
+          >
+            <Text>{userType}</Text>
+            <Ionicons
+              name={userTypeVisible ? "chevron-up" : "chevron-down"}
+              size={20}
+              color="black"
             />
+          </TouchableOpacity>
+          {userTypeVisible && (
+            <View style={styles.dropdownList}>
+              {UserTypOptions.map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  onPress={() => {
+                    setUserType(item);
+                    setUserTypeVisible(false);
+                  }}
+                  style={styles.dropdownItem}
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* Status Dropdown */}
+          <Text style={styles.label}>Status</Text>
+          <TouchableOpacity
+            onPress={() => setStatusVisible(!statusVisible)}
+            style={styles.dropdown}
+          >
+            <Text>{status}</Text>
+            <Ionicons
+              name={statusVisible ? "chevron-up" : "chevron-down"}
+              size={20}
+              color="black"
+            />
+          </TouchableOpacity>
+          {statusVisible && (
+            <View style={styles.dropdownList}>
+              {statusOptions.map((item) => (
+                <TouchableOpacity
+                  key={item}
+                  onPress={() => {
+                    setStatus(item);
+                    setStatusVisible(false);
+                  }}
+                  style={styles.dropdownItem}
+                >
+                  <Text>{item}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
+          {/* Buttons */}
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={styles.cancelButton}
+            >
+              <Text style={{ color: "#333" }}>Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={handleEditUser}
+              style={styles.saveButton}
+            >
+              <Text style={{ color: "#fff" }}>Save</Text>
+            </TouchableOpacity>
           </View>
-          <Button title="Close" onPress={() => setModalVisible(false)} />
         </View>
-      </TouchableOpacity>
+      </View>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
   overlay: {
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
     flex: 1,
+    backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
     alignItems: "center",
   },
+  backgroundTouchable: {
+    ...StyleSheet.absoluteFillObject,
+  },
   modalContainer: {
-    backgroundColor: "white",
-    borderRadius: 15,
-    padding: 20,
     width: "90%",
-    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 20,
+    elevation: 5,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 10,
-    color: "grey",
+    marginBottom: 15,
+    textAlign: "center",
   },
-  table: {
-    width: "100%",
+  label: {
+    fontWeight: "600",
+    marginTop: 12,
+    marginBottom: 6,
+  },
+  input: {
+    backgroundColor: "#fff",
+    borderColor: "#ccc",
     borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
+    borderRadius: 6,
+    padding: 10,
   },
-  tableHeader: {
+  dropdown: {
+    backgroundColor: "#fff",
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 6,
+    padding: 10,
     flexDirection: "row",
-    backgroundColor: "#f5f5f5",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  dropdownList: {
+    backgroundColor: "#fff",
+    borderRadius: 6,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    marginTop: 4,
+    marginBottom: 6,
+  },
+  dropdownItem: {
     padding: 10,
     borderBottomWidth: 1,
-    borderColor: "#ddd",
+    borderBottomColor: "#eee",
   },
-  headerText: {
-    flex: 1,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  tableRow: {
+  buttonRow: {
     flexDirection: "row",
-    padding: 10,
-    borderBottomWidth: 1,
-    borderColor: "#ddd",
+    justifyContent: "flex-end",
+    marginTop: 20,
   },
-  rowText: {
-    flex: 1,
-    textAlign: "center",
+  cancelButton: {
+    backgroundColor: "#eee",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 6,
+    marginRight: 10,
+  },
+  saveButton: {
+    backgroundColor: "#2196F3",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 6,
   },
 });
 
