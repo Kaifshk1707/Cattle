@@ -8,20 +8,38 @@ import {
   Alert,
 } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { getAddUserList } from "../../config/dataServices/ManageUsers";
 
 const AddUserScreen = ({ navigation }) => {
   const [status, setStatus] = useState("Active");
   const [userType, setUserType] = useState("User");
   const [statusVisible, setStatusVisible] = useState(false);
   const [userTypeVisible, setUserTypeVisible] = useState(false);
+  const [userName, setUserName] = useState("");
+
 
   const statusOptions = ["Active", "Inactive"];
   const UserTypOptions = ["User", "Vendor"];
 
-  const handleSaveUser = () => {
-    navigation.goBack();
-    Alert.alert("The user has been added successfully.");
+const handleSaveUser = async () => {
+  if (!userName.trim()) {
+    Alert.alert("Validation", "Please enter user name");
+    return;
+  }
+
+  const newUser = {
+    userName,
+    userType: userType === "Vendor", // convert string to boolean
+    status: status === "Active", // convert string to boolean
   };
+
+  try {
+    await getAddUserList(newUser);
+    navigation.goBack(); // 👈 go back only after success
+  } catch (error) {
+    Alert.alert("Error", "Something went wrong.");
+  }
+};
 
   return (
     <View style={{ flex: 1, backgroundColor: "#f7f7f7", padding: 16 }}>
@@ -42,6 +60,8 @@ const AddUserScreen = ({ navigation }) => {
       </Text>
       <TextInput
         placeholder="Enter user name"
+        value={userName}
+        onChangeText={setUserName}
         style={{
           backgroundColor: "white",
           padding: 10,
@@ -196,7 +216,7 @@ const AddUserScreen = ({ navigation }) => {
             borderRadius: 5,
           }}
         >
-          <Text style={{ color: "white" }}>Save changes</Text>
+          <Text style={{ color: "white" }}>Save</Text>
         </TouchableOpacity>
       </View>
     </View>

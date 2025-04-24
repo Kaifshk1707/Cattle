@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   Modal,
-  ActivityIndicator,
 } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
@@ -17,61 +16,52 @@ import HomeHeader from "../../components/headers/HomeHeader";
 import {
   getManageUserList,
   getAddUserList,
-  getEditUserList,
-  getDeleteUserList,
 } from "../../config/dataServices/ManageUsers";
 import { getDeleteManageMedicineList } from "../../config/dataServices/ManageMedicine";
-import { globalColor } from "../../styles/globalColor";
-import { useFocusEffect } from "@react-navigation/native";
 
 const Users = ({ navigation }) => {
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [manageUser, setManageUser] = useState<any[] | undefined>([]);
-  const [loading, setLoading] = useState(false);
 
   const dispatch = useDispatch();
+  // const usersDataList = useSelector((state) => state.ManageUserList.data) || [];
+
+  // const usersData = usersDataList.map((user) => ({
+  //   id: user.id,
+  //   name: user.name,
+  //   status: user.status === 1 ? "Active" : "Inactive",
+  //   type: user.userType === 1 ? "User" : "Vendor",
+  // }));
+  // console.log("===================", JSON.stringify(usersDataList));
+
+  // useEffect(() => {
+  //   dispatch(userListData());
+  // }, []);
 
   const fetchManageUserData = async () => {
-    try {
-      setLoading(true); // Show loader
-      const response = await getManageUserList();
-      setManageUser(response);
-    } catch (error) {
-      console.error("Fetch error", error);
-    } finally {
-      setLoading(false); // Hide loader
-    }
+    const response = await getManageUserList();
+    setManageUser(response);
+    // console.log("=====MANAGE USER-LIST=====>", response);
   };
 
   useEffect(() => {
     fetchManageUserData();
   }, []);
+  
 
-useFocusEffect(
-  useCallback(() => {
-    fetchManageUserData(); //fetch data every time screen comes into focus
-  }, [])
-);
-
-  // Edit User
-  const handleEditUser = async (id: string) => {
-    const updatedUser = {
-      userName: "Updated Manager",
-      userType: true,
-      status: false,
-    };
-    await getEditUserList(id, updatedUser);
+  const handleAddUser = async () => {
+    const response = await getAddUserList();
+    // console.log("=======USER ADDED========>", response);
     fetchManageUserData();
   };
 
-  // Delete User
   const handleDeleteUser = async (id: string) => {
-    const success = await getDeleteUserList(id);
-    if (success) {
-      fetchManageUserData();
-    }
+      const response = await getDeleteManageMedicineList(id);
+      setManageUser(response);
+    fetchManageUserData();
+      console.log("=====MANAGE DELETE USER-LIST=====>", response);
   };
 
   return (
@@ -161,12 +151,7 @@ useFocusEffect(
       </View>
 
       {/* User List */}
-      {loading ? (
-  <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-    <ActivityIndicator size="large" color={globalColor.blueGray} />
-  </View>
-) :
-      (
+      {manageUser ? (
         <FlatList
           data={manageUser}
           keyExtractor={(item) => item.id}
@@ -185,8 +170,7 @@ useFocusEffect(
               <Text
                 style={{
                   flex: 1,
-                  color:
-                    item.status === true ? globalColor.darkGreen : globalColor.red,
+                  color: item.status === true ? "green" : "darkred",
                   fontWeight: "bold",
                   fontSize: 15,
                   right: 15,
@@ -197,10 +181,7 @@ useFocusEffect(
               <Text
                 style={{
                   flex: 1,
-                  color:
-                    item.userType === true
-                      ? globalColor.deepBlue
-                      : globalColor.blueGray,
+                  color: item.type === true ? "orange" : "green",
                   fontWeight: "bold",
                   fontSize: 15,
                   textAlign: "center",
@@ -209,49 +190,44 @@ useFocusEffect(
               >
                 {item.userType === true ? "Vendor" : "User"}
               </Text>
-              {/* Action Buttons */}
 
-              <View style={{ flex: 1 }}>
+              {/* Action Buttons */}
+              <View style={{ flex: 1, flexDirection: "row" }}>
                 <TouchableOpacity
-                  onPress={() => handleEditUser(item.id)}
+                  onPress={() => setModalVisible(true)}
                   style={{
-                    backgroundColor: globalColor.lightBlue,
-                    padding: 3,
-                    // marginRight: 5,
+                    backgroundColor: "#FFC107",
+                    padding: 5,
+                    marginRight: 5,
                     borderRadius: 5,
-                    // left: 15,
+                    left: 15,
                   }}
                 >
-                  <Feather
-                    name="edit"
-                    size={20}
-                    color="black"
-                    style={{ alignSelf: "center" }}
-                  />
+                  <Feather name="edit" size={20} color="black" />
                 </TouchableOpacity>
-
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={() => handleDeleteUser(item.id)}
                   style={{
-                    backgroundColor: globalColor.red,
-                    padding: 3,
+                    backgroundColor: "#DC3545",
+                    // backgroundColor: "green",
+                    padding: 5,
                     borderRadius: 5,
-                    marginTop: 5,
                   }}
                 >
-                  <MaterialIcons
-                    name="delete"
-                    size={20}
-                    color="white"
-                    style={{ alignSelf: "center" }}
-                  />
-                </TouchableOpacity>
+                  <MaterialIcons name="delete" size={20} color="white" />
+                </TouchableOpacity> */}
               </View>
             </View>
           )}
           contentContainerStyle={{ paddingBottom: 20 }}
         />
-      ) }
+      ) : (
+        <View style={{ justifyContent: "center", alignItems: "center" }}>
+          <Text style={{ fontSize: 30, fontWeight: "bold", color: "black" }}>
+            No data here...
+          </Text>
+        </View>
+      )}
 
       {/* Floating Add Button */}
       <TouchableOpacity

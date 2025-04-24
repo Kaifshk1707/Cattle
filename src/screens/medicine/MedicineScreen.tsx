@@ -12,8 +12,9 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ManageMedicine from "../../components/Modal/ManageMedicine";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
-import { getManageMedicine } from "../../config/dataServices/ManageMedicine";
-
+import { getManageMedicineList } from "../../config/dataServices/ManageMedicine";
+import axios from "axios";
+import { Alert } from "react-native";
 const medicines = [
   { id: "1", name: "Telmikind", stock: 6, status: "Active" },
   { id: "2", name: "Alpha", stock: 7, status: "Inactive" },
@@ -34,14 +35,16 @@ const MedicineScreen = () => {
   const [manageMedicine, setManageMedicine] = useState<any[] | undefined>([]);
 
   const fetchData = async () => {
-    const response = await getManageMedicine();
+    const response = await getManageMedicineList();
     setManageMedicine(response);
-    console.log("kaif", response);
+    console.log("======>", JSON.stringify(response.length));
   };
 
   useEffect(() => {
     fetchData();
   }, []);
+
+
 
   const filteredMedicines = medicines.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
@@ -98,8 +101,8 @@ const MedicineScreen = () => {
         >
           <Feather name="edit" size={20} color="black" />
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          onPress={() => setDeleteModal(true)}
+        <TouchableOpacity
+          onPress={()=>deleteManageMedicine(item.id)}
           style={{
             backgroundColor: "#E53935",
             padding: 6,
@@ -109,7 +112,7 @@ const MedicineScreen = () => {
           activeOpacity={0.7}
         >
           <MaterialIcons name="delete" size={24} color="white" />
-        </TouchableOpacity> */}
+        </TouchableOpacity>
       </View>
     </View>
   );
