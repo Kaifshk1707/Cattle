@@ -12,21 +12,35 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ManageMedicine from "../../components/Modal/ManageMedicine";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
-import { getDeleteManageMedicineList, getManageMedicineList } from "../../config/dataServices/ManageMedicine";
+import {
+  getDeleteManageMedicineList,
+  getManageMedicineList,
+} from "../../config/dataServices/ManageMedicine";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import EditMedicineModal from "../../components/Modal/EditMedicineModal";
+import ShimmerPlaceHolder from "react-native-shimmer-placeholder";
+import LinearGradient from "react-native-linear-gradient";
+import { globalColor } from "../../styles/globalColor";
 
 const MedicineScreen = () => {
   const [search, setSearch] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [manageMedicine, setManageMedicine] = useState<any[] | undefined>([]);
-   const [selectedMedicine, setSelectedMedicine] = useState(null);
+  const [selectedMedicine, setSelectedMedicine] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigation = useNavigation();
 
   const fetchMedicineData = async () => {
-    const response = await getManageMedicineList();
-    setManageMedicine(response);
+    try {
+       setLoading(true);
+      const response = await getManageMedicineList();
+      setManageMedicine(response);
+    } catch (error) {
+      console.log(error);
+    }finally{
+       setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -34,93 +48,160 @@ const MedicineScreen = () => {
   }, []);
 
   useFocusEffect(
-      useCallback(() => {
-        fetchMedicineData(); //fetch data every time screen comes into focus
-      }, [])
-    );
+    useCallback(() => {
+      fetchMedicineData(); //fetch data every time screen comes into focus
+    }, [])
+  );
 
-   const handleMedicineUpdated = () => {
-     fetchMedicineData(); // Refresh the list after update
-   };
+  const handleMedicineUpdated = () => {
+    fetchMedicineData(); // Refresh the list after update
+  };
 
-   // Delete User
-     const handleDeleteMedicine = async (id: string) => {
-       const success = await getDeleteManageMedicineList(id);
-       if (success) {
-         fetchMedicineData();
-       }
-     };
+  // Delete User
+  const handleDeleteMedicine = async (id: string) => {
+    const success = await getDeleteManageMedicineList(id);
+    if (success) {
+      fetchMedicineData();
+    }
+  };
 
-  const renderItem = ({ item, index }) => (
+   <ShimmerPlaceHolder
+     LinearGradient={LinearGradient}
+     style={{
+       height: 60,
+       borderRadius: 8,
+       marginBottom: 12,
+       width: "100%",
+     }}
+   />;
+
+const renderItem = ({ item, index }: { item: any; index: number }) => (
+  <View
+    style={{
+      flexDirection: "row",
+      alignItems: "center",
+      paddingVertical: 16,
+      paddingHorizontal: 14,
+      backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#F9F9F9",
+      borderBottomWidth: 1,
+      borderBottomColor: "#E0E0E0",
+    }}
+  >
+    {/* Index */}
+    <Text
+      style={{
+        flex: 0.6,
+        fontSize: 15,
+        color: "#757575",
+        textAlign: "center",
+      }}
+    >
+      {index + 1}
+    </Text>
+
+    {/* Title */}
+    <Text
+      style={{
+        flex: 2.8,
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#212121",
+      }}
+      numberOfLines={1}
+    >
+      {item.title}
+    </Text>
+
+    {/* Stock */}
+    <Text
+      style={{
+        flex: 1.1,
+        fontSize: 15,
+        textAlign: "center",
+        color: "#424242",
+      }}
+    >
+      {item.stock}
+    </Text>
+
+    {/* Status */}
     <View
       style={{
-        flexDirection: "row",
-        padding: 12,
-        borderBottomWidth: 1,
-        borderColor: "#ddd",
+        flex: 1.6,
+        backgroundColor: item.status ? "#43A047" : "#FB8C00",
+        paddingVertical: 6,
+        paddingHorizontal: 10,
+        borderRadius: 20,
+        justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#fff",
       }}
     >
       <Text
-        style={{ flex: 1, textAlign: "center", fontSize: 16, color: "#444" }}
-      >
-        {index + 1}
-      </Text>
-      <Text style={{ flex: 3, fontSize: 16, fontWeight: "500", color: "#222" }}>
-        {item.title}
-      </Text>
-      <Text
-        style={{ flex: 1, textAlign: "center", fontSize: 16, color: "#555" }}
-      >
-        {item.stock}
-      </Text>
-      <View
         style={{
-          flex: 2,
-          alignItems: "center",
-          paddingVertical: 6,
-          borderRadius: 5,
-          backgroundColor: item.status === true ? "#4CAF50" : "#FFA726",
+          color: "#FFF",
+          fontSize: 13,
+          fontWeight: "bold",
         }}
       >
-        <Text style={{ color: "white", fontWeight: "bold" }}>
-          {item.status === true ? "Active" : "Inactive"}
-        </Text>
-      </View>
-      <View style={{ flexDirection: "row", flex: 2, justifyContent: "center" }}>
-        <TouchableOpacity
-          // onPress={() => setModalVisible(true)}
-          onPress={() => {
-            setSelectedMedicine(item);
-            setModalVisible(true);
-          }}
-          style={{
-            backgroundColor: "#FFD700",
-            padding: 6,
-            marginRight: 5,
-            borderRadius: 5,
-            elevation: 2,
-          }}
-          activeOpacity={0.7}
-        >
-          <Feather name="edit" size={20} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>  handleDeleteMedicine(item.id)}
-          style={{
-            backgroundColor: "#E53935",
-            padding: 6,
-            borderRadius: 5,
-            elevation: 2,
-          }}
-          activeOpacity={0.7}
-        >
-          <MaterialIcons name="delete" size={24} color="white" />
-        </TouchableOpacity>
-      </View>
+        {item.status ? "Active" : "Inactive"}
+      </Text>
     </View>
-  );
+
+    {/* Actions */}
+    <View
+      style={{
+        flex: 2,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => {
+          setSelectedMedicine(item);
+          setModalVisible(true);
+        }}
+        style={{
+          backgroundColor: "#FFEB3B",
+          padding: 8,
+          borderRadius: 8,
+          marginRight: 8,
+          alignItems: "center",
+          justifyContent: "center",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+          elevation: 3,
+        }}
+        activeOpacity={0.8}
+      >
+        <Feather name="edit" size={18} color="#212121" />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={() => handleDeleteMedicine(item.id)}
+        style={{
+          backgroundColor: "#E53935",
+          padding: 8,
+          borderRadius: 8,
+          alignItems: "center",
+          justifyContent: "center",
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.1,
+          shadowRadius: 2,
+          elevation: 3,
+        }}
+        activeOpacity={0.8}
+      >
+        <MaterialIcons name="delete" size={20} color="#FFF" />
+      </TouchableOpacity>
+    </View>
+  </View>
+);
+
+
 
   return (
     <AppAreaView>
@@ -146,7 +227,7 @@ const MedicineScreen = () => {
               ))}
             </View> */}
 
-      <TextInput
+      {/* <TextInput
         style={{
           borderWidth: 1,
           borderColor: "#bbb",
@@ -159,7 +240,7 @@ const MedicineScreen = () => {
         placeholder="Search medicines..."
         value={search}
         onChangeText={setSearch}
-      />
+      /> */}
 
       <View
         style={{
@@ -175,8 +256,8 @@ const MedicineScreen = () => {
             flex: 1,
             textAlign: "center",
             fontWeight: "bold",
-            color: "black",
-            // textAlign: "left",
+            color: globalColor.blueGray,
+            fontSize: 15,
           }}
         >
           Sr No
@@ -185,7 +266,8 @@ const MedicineScreen = () => {
           style={{
             flex: 3,
             fontWeight: "bold",
-            color: "black",
+            color: globalColor.blueGray,
+            fontSize: 15,
             textAlign: "center",
           }}
         >
@@ -196,7 +278,8 @@ const MedicineScreen = () => {
             flex: 1,
             textAlign: "center",
             fontWeight: "bold",
-            color: "black",
+            color: globalColor.blueGray,
+            fontSize: 15,
           }}
         >
           Stock
@@ -206,7 +289,8 @@ const MedicineScreen = () => {
             flex: 2,
             textAlign: "center",
             fontWeight: "bold",
-            color: "black",
+            color: globalColor.blueGray,
+            fontSize: 15,
           }}
         >
           Status
@@ -216,19 +300,86 @@ const MedicineScreen = () => {
             flex: 2,
             textAlign: "center",
             fontWeight: "bold",
-            color: "black",
+            color: globalColor.blueGray,
+            fontSize: 15,
           }}
         >
           Actions
         </Text>
       </View>
 
-      <FlatList
-        data={manageMedicine}
-        showsVerticalScrollIndicator={false}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-      />
+      {loading ? (
+        <View style={{ flex: 1, padding: 16 }}>
+          {[...Array(12)].map((_, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginBottom: 12,
+                paddingHorizontal: 10,
+              }}
+            >
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 4,
+                  marginRight: 10,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  flex: 2,
+                  height: 30,
+                  borderRadius: 4,
+                  marginRight: 10,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  width: 60,
+                  height: 30,
+                  borderRadius: 4,
+                  marginRight: 10,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  width: 60,
+                  height: 30,
+                  borderRadius: 4,
+                  marginRight: 10,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{
+                  width: 30,
+                  height: 40,
+                  borderRadius: 6,
+                  marginRight: 5,
+                }}
+              />
+              <ShimmerPlaceHolder
+                LinearGradient={LinearGradient}
+                style={{ width: 30, height: 40, borderRadius: 6 }}
+              />
+            </View>
+          ))}
+        </View>
+      ) : (
+        <FlatList
+          data={manageMedicine}
+          showsVerticalScrollIndicator={false}
+          keyExtractor={(item) => item.id}
+          renderItem={renderItem}
+        />
+      )}
       <TouchableOpacity
         onPress={() => navigation.navigate("AddMedicineScreen")}
         style={{

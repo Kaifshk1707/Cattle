@@ -87,7 +87,7 @@ const Users = () => {
       <HomeHeader title={" Manage Users"} />
 
       {/* Search Input */}
-      <TextInput
+      {/* <TextInput
         style={{
           borderWidth: 1,
           borderColor: "#ccc",
@@ -98,7 +98,7 @@ const Users = () => {
         placeholder="Search..."
         value={search}
         onChangeText={setSearch}
-      />
+      /> */}
 
       {/* Table Header */}
       <View
@@ -115,7 +115,7 @@ const Users = () => {
             fontSize: 15,
             flex: 2,
             fontWeight: "bold",
-            color: "black",
+            color: globalColor.blueGray,
             right: 5,
           }}
         >
@@ -126,7 +126,7 @@ const Users = () => {
             fontSize: 15,
             flex: 2,
             fontWeight: "bold",
-            color: "black",
+            color: globalColor.blueGray,
             right: 20,
           }}
         >
@@ -138,7 +138,7 @@ const Users = () => {
             flex: 2,
             left: 20,
             fontWeight: "bold",
-            color: "black",
+            color: globalColor.blueGray,
           }}
         >
           Status
@@ -149,7 +149,7 @@ const Users = () => {
             flex: 2,
             textAlign: "center",
             fontWeight: "bold",
-            color: "black",
+            color: globalColor.blueGray,
           }}
         >
           User Type
@@ -160,7 +160,7 @@ const Users = () => {
             flex: 2,
             textAlign: "center",
             fontWeight: "bold",
-            color: "black",
+            color: globalColor.blueGray,
           }}
         >
           Action
@@ -240,46 +240,75 @@ const Users = () => {
             <View
               style={{
                 flexDirection: "row",
-                padding: 10,
-                backgroundColor: index % 2 === 0 ? "#fff" : "#f9f9f9",
+                alignItems: "center",
+                paddingVertical: 12,
+                paddingHorizontal: 10,
+                backgroundColor: index % 2 === 0 ? "#FFFFFF" : "#F5F5F5",
                 borderBottomWidth: 1,
-                borderBottomColor: "#ddd",
+                borderBottomColor: "#E0E0E0",
               }}
             >
-              <Text style={{ flex: 1, fontSize: 15 }}>{index + 1}</Text>
-              <Text style={{ flex: 2, fontSize: 15 }}>{item.userName}</Text>
+              {/* Index */}
               <Text
                 style={{
-                  flex: 1,
-                  color:
-                    item.status === true
-                      ? globalColor.darkGreen
-                      : globalColor.red,
-                  fontWeight: "bold",
-                  fontSize: 15,
-                  right: 15,
-                }}
-              >
-                {item.status === true ? "Active" : "Inactive"}
-              </Text>
-              <Text
-                style={{
-                  flex: 1,
-                  color:
-                    item.userType === true
-                      ? globalColor.deepBlue
-                      : globalColor.blueGray,
-                  fontWeight: "bold",
-                  fontSize: 15,
+                  flex: 0.7,
+                  fontSize: 16,
+                  color: "#424242",
                   textAlign: "center",
-                  right: 15,
                 }}
               >
-                {item.userType === true ? "Vendor" : "User"}
+                {index + 1}
               </Text>
-              {/* Action Buttons */}
 
-              <View style={{ flex: 1 }}>
+              {/* User Name */}
+              <Text
+                style={{
+                  flex: 2.5,
+                  fontSize: 16,
+                  fontWeight: "500",
+                  color: "#212121",
+                }}
+              >
+                {item.userName}
+              </Text>
+
+              {/* Status */}
+              <Text
+                style={{
+                  flex: 1.3,
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: item.status ? globalColor.darkGreen : globalColor.red,
+                }}
+              >
+                {item.status ? "Active" : "Inactive"}
+              </Text>
+
+              {/* User Type */}
+              <Text
+                style={{
+                  flex: 1.3,
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: item.userType
+                    ? globalColor.deepBlue
+                    : globalColor.blueGray,
+                }}
+              >
+                {item.userType ? "Vendor" : "User"}
+              </Text>
+
+              {/* Actions */}
+              <View
+                style={{
+                  flex: 1.2,
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
                 <TouchableOpacity
                   onPress={() => {
                     setSelectedUser(item);
@@ -287,35 +316,31 @@ const Users = () => {
                   }}
                   style={{
                     backgroundColor: globalColor.lightBlue,
-                    padding: 3,
-                    // marginRight: 5,
-                    borderRadius: 5,
-                    // left: 15,
+                    padding: 6,
+                    borderRadius: 6,
+                    elevation: 2,
+                    width: 35,
+                    alignItems: "center",
+                    marginBottom: 5,
                   }}
+                  activeOpacity={0.7}
                 >
-                  <Feather
-                    name="edit"
-                    size={20}
-                    color="black"
-                    style={{ alignSelf: "center" }}
-                  />
+                  <Feather name="edit" size={18} color="#000" />
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => handleDeleteUser(item.id)}
                   style={{
                     backgroundColor: globalColor.red,
-                    padding: 3,
-                    borderRadius: 5,
-                    marginTop: 5,
+                    padding: 6,
+                    borderRadius: 6,
+                    elevation: 2,
+                    width: 35,
+                    alignItems: "center",
                   }}
+                  activeOpacity={0.7}
                 >
-                  <MaterialIcons
-                    name="delete"
-                    size={20}
-                    color="white"
-                    style={{ alignSelf: "center" }}
-                  />
+                  <MaterialIcons name="delete" size={18} color="#FFF" />
                 </TouchableOpacity>
               </View>
             </View>
