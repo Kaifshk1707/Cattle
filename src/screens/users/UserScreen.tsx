@@ -22,21 +22,20 @@ import {
 } from "../../config/dataServices/ManageUsers";
 import { getDeleteManageMedicineList } from "../../config/dataServices/ManageMedicine";
 import { globalColor } from "../../styles/globalColor";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import ShimmerPlaceHolder from "react-native-shimmer-placeholder";
 import LinearGradient from "react-native-linear-gradient";
 
+const Users = () => {
+  const navigation = useNavigation<any>();
+  const dispatch = useDispatch();
 
-const Users = ({ navigation }) => {
   const [search, setSearch] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [manageUser, setManageUser] = useState<any[] | undefined>([]);
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-
-
-  const dispatch = useDispatch();
 
   const fetchManageUserData = async () => {
     try {
@@ -58,24 +57,21 @@ const Users = ({ navigation }) => {
     fetchManageUserData(); // Refresh the list after update
   };
 
-useFocusEffect(
-  useCallback(() => {
-    fetchManageUserData(); //fetch data every time screen comes into focus
-  }, [])
-);
+  useFocusEffect(
+    useCallback(() => {
+      fetchManageUserData(); //fetch data every time screen comes into focus
+    }, [])
+  );
 
-<ShimmerPlaceHolder
-  LinearGradient={LinearGradient}
-  style={{
-    height: 60,
-    borderRadius: 8,
-    marginBottom: 12,
-    width: "100%",
-  }}
-/>
-
-
- 
+  <ShimmerPlaceHolder
+    LinearGradient={LinearGradient}
+    style={{
+      height: 60,
+      borderRadius: 8,
+      marginBottom: 12,
+      width: "100%",
+    }}
+  />;
 
   // Delete User
   const handleDeleteUser = async (id: string) => {
@@ -331,7 +327,6 @@ useFocusEffect(
       {/* Floating Add Button */}
       <TouchableOpacity
         onPress={() => navigation.navigate("AddUserScreen")}
-        // onPress={handleAddUser}
         style={{
           width: 50,
           height: 50,

@@ -10,38 +10,41 @@ import {
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getAddUserList } from "../../config/dataServices/ManageUsers";
 import { useNavigation } from "@react-navigation/native";
+import { getAddMedicineList } from "../../config/dataServices/ManageMedicine";
 
-const AddUserScreen = () => {
-    const navigation = useNavigation();
+const AddMedicineScreen = () => {
+  const navigation = useNavigation();
+  const [title, setTitle] = useState("");
+  const [stock, setStock] = useState("");
   const [status, setStatus] = useState("Active");
-  const [userType, setUserType] = useState("User");
   const [statusVisible, setStatusVisible] = useState(false);
-  const [userTypeVisible, setUserTypeVisible] = useState(false);
-  const [userName, setUserName] = useState("");
-
 
   const statusOptions = ["Active", "Inactive"];
-  const UserTypOptions = ["User", "Vendor"];
 
-const handleSaveUser = async () => {
-  // if (!userName.trim()) {
-  //   Alert.alert("Validation", "Please enter user name");
-  //   return;
-  // }
+  const handleSaveMedicine = async () => {
+    if (!title.trim()) {
+      Alert.alert("Validation", "Please enter medicine name");
+      return;
+    }
 
-  const newUser = {
-    userName,
-    userType: userType === "Vendor", 
-    status: status === "Active", 
+    if (!stock.trim()) {
+      Alert.alert("Validation", "Please enter stock");
+      return;
+    }
+
+    const newMedicine = {
+      title,
+      stock,
+      status: status === "Active",
+    };
+
+    try {
+      await getAddMedicineList(newMedicine);
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong.");
+    }
   };
-
-  try {
-    await getAddUserList(newUser);
-    navigation.goBack(); 
-  } catch (error) {
-    Alert.alert("Error", "Something went wrong.");
-  }
-};
 
   return (
     <View style={{ flex: 1, backgroundColor: "#f7f7f7", padding: 16 }}>
@@ -52,18 +55,18 @@ const handleSaveUser = async () => {
       >
         <Ionicons name="arrow-back" size={24} color="black" />
         <Text style={{ fontSize: 20, fontWeight: "bold", marginLeft: 10 }}>
-          Add User
+          Add Medicine
         </Text>
       </TouchableOpacity>
 
-      {/* User Name Input */}
-      <Text style={{ fontWeight: "bold", marginBottom: 10, marginTop: "5%" }}>
-        User Name
+      {/* Medicine Name Input */}
+      <Text style={{ fontWeight: "bold", marginBottom: 10 }}>
+        Medicine Name
       </Text>
       <TextInput
-        placeholder="Enter user name"
-        value={userName}
-        onChangeText={setUserName}
+        placeholder="Enter medicine name"
+        value={title}
+        onChangeText={setTitle}
         style={{
           backgroundColor: "white",
           padding: 10,
@@ -74,67 +77,25 @@ const handleSaveUser = async () => {
         }}
       />
 
-      {/* User-Type Dropdown */}
-      <Text style={{ fontWeight: "bold", marginBottom: 10, marginTop: "2%" }}>
-        User Type
-      </Text>
-      <TouchableOpacity
-        onPress={() => setUserTypeVisible(!userTypeVisible)}
+      {/* Stock Input */}
+      <Text style={{ fontWeight: "bold", marginBottom: 10 }}>Stock</Text>
+      <TextInput
+        placeholder="Enter stock"
+        value={stock}
+        onChangeText={setStock}
+        keyboardType="numeric"
         style={{
           backgroundColor: "white",
           padding: 10,
           borderRadius: 5,
           borderWidth: 1,
           borderColor: "#ccc",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
+          marginBottom: 15,
         }}
-      >
-        <Text>{userType}</Text>
-        <Ionicons
-          name={userTypeVisible ? "chevron-up" : "chevron-down"}
-          size={20}
-          color="black"
-        />
-      </TouchableOpacity>
-
-      {userTypeVisible && (
-        <View
-          style={{
-            backgroundColor: "white",
-            borderRadius: 5,
-            borderWidth: 1,
-            borderColor: "#ccc",
-            marginTop: 5,
-          }}
-        >
-          <FlatList
-            data={UserTypOptions}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => {
-                  setUserType(item);
-                  setUserTypeVisible(false);
-                }}
-                style={{
-                  padding: 10,
-                  borderBottomWidth: 1,
-                  borderBottomColor: "#ccc",
-                }}
-              >
-                <Text>{item}</Text>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
-      )}
+      />
 
       {/* Status Dropdown */}
-      <Text style={{ fontWeight: "bold", marginBottom: 10, marginTop: "5%" }}>
-        Status
-      </Text>
+      <Text style={{ fontWeight: "bold", marginBottom: 10 }}>Status</Text>
       <TouchableOpacity
         onPress={() => setStatusVisible(!statusVisible)}
         style={{
@@ -210,7 +171,7 @@ const handleSaveUser = async () => {
         </TouchableOpacity>
 
         <TouchableOpacity
-          onPress={handleSaveUser}
+          onPress={handleSaveMedicine}
           style={{
             backgroundColor: "#2196F3",
             paddingVertical: 10,
@@ -225,4 +186,4 @@ const handleSaveUser = async () => {
   );
 };
 
-export default AddUserScreen;
+export default AddMedicineScreen;

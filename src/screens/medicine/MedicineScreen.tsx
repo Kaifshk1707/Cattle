@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,45 +12,46 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import ManageMedicine from "../../components/Modal/ManageMedicine";
 import AppAreaView from "../../components/view/safeAreaView";
 import HomeHeader from "../../components/headers/HomeHeader";
-import { getManageMedicineList } from "../../config/dataServices/ManageMedicine";
-import axios from "axios";
-import { Alert } from "react-native";
-const medicines = [
-  { id: "1", name: "Telmikind", stock: 6, status: "Active" },
-  { id: "2", name: "Alpha", stock: 7, status: "Inactive" },
-  { id: "3", name: "Nex bolic", stock: 1, status: "Active" },
-  { id: "4", name: "Rupitas", stock: 1, status: "Active" },
-  { id: "5", name: "Kito Disatix", stock: 1, status: "Active" },
-  { id: "6", name: "Bovispace", stock: 2, status: "Active" },
-  { id: "7", name: "Texableed", stock: 2, status: "Active" },
-  { id: "8", name: "Pragma", stock: 2, status: "Active" },
-  { id: "9", name: "Duraret", stock: 2, status: "Active" },
-  { id: "10", name: "Nealent Cream", stock: 1, status: "Active" },
-];
+import { getDeleteManageMedicineList, getManageMedicineList } from "../../config/dataServices/ManageMedicine";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import EditMedicineModal from "../../components/Modal/EditMedicineModal";
 
 const MedicineScreen = () => {
   const [search, setSearch] = useState("");
   const [deleteModal, setDeleteModal] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [manageMedicine, setManageMedicine] = useState<any[] | undefined>([]);
+   const [selectedMedicine, setSelectedMedicine] = useState(null);
+  const navigation = useNavigation();
 
-  const fetchData = async () => {
+  const fetchMedicineData = async () => {
     const response = await getManageMedicineList();
     setManageMedicine(response);
-    console.log("======>", JSON.stringify(response.length));
   };
 
   useEffect(() => {
-    fetchData();
+    fetchMedicineData();
   }, []);
 
+  useFocusEffect(
+      useCallback(() => {
+        fetchMedicineData(); //fetch data every time screen comes into focus
+      }, [])
+    );
 
+   const handleMedicineUpdated = () => {
+     fetchMedicineData(); // Refresh the list after update
+   };
 
-  const filteredMedicines = medicines.filter((item) =>
-    item.name.toLowerCase().includes(search.toLowerCase())
-  );
+   // Delete User
+     const handleDeleteMedicine = async (id: string) => {
+       const success = await getDeleteManageMedicineList(id);
+       if (success) {
+         fetchMedicineData();
+       }
+     };
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item, index }) => (
     <View
       style={{
         flexDirection: "row",
@@ -64,7 +65,7 @@ const MedicineScreen = () => {
       <Text
         style={{ flex: 1, textAlign: "center", fontSize: 16, color: "#444" }}
       >
-        {item.id}
+        {index + 1}
       </Text>
       <Text style={{ flex: 3, fontSize: 16, fontWeight: "500", color: "#222" }}>
         {item.title}
@@ -89,7 +90,11 @@ const MedicineScreen = () => {
       </View>
       <View style={{ flexDirection: "row", flex: 2, justifyContent: "center" }}>
         <TouchableOpacity
-          onPress={() => setModalVisible(true)}
+          // onPress={() => setModalVisible(true)}
+          onPress={() => {
+            setSelectedMedicine(item);
+            setModalVisible(true);
+          }}
           style={{
             backgroundColor: "#FFD700",
             padding: 6,
@@ -102,7 +107,7 @@ const MedicineScreen = () => {
           <Feather name="edit" size={20} color="black" />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={()=>deleteManageMedicine(item.id)}
+          onPress={() =>  handleDeleteMedicine(item.id)}
           style={{
             backgroundColor: "#E53935",
             padding: 6,
@@ -171,7 +176,7 @@ const MedicineScreen = () => {
             textAlign: "center",
             fontWeight: "bold",
             color: "black",
-            textAlign: "left",
+            // textAlign: "left",
           }}
         >
           Sr No
@@ -224,7 +229,8 @@ const MedicineScreen = () => {
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
       />
-      {/* <TouchableOpacity
+      <TouchableOpacity
+        onPress={() => navigation.navigate("AddMedicineScreen")}
         style={{
           width: 50,
           height: 50,
@@ -239,10 +245,12 @@ const MedicineScreen = () => {
         }}
       >
         <MaterialIcons name="add" size={30} color="white" />
-      </TouchableOpacity> */}
-      <ManageMedicine
+      </TouchableOpacity>
+      <EditMedicineModal
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
+        selectedMedicine={selectedMedicine}
+        onMedicineUpdated={handleMedicineUpdated}
       />
       {/* Delete Modal */}
       <Modal visible={deleteModal} transparent={true} animationType="fade">

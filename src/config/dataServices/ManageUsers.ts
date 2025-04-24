@@ -28,7 +28,7 @@ export const getManageUserList = async () => {
 };
 
 // ✅ POST (Add New User)
-export const getAddUserList = async (userData) => {
+export const getAddUserList = async (userData:any) => {
   try {
     const body = {
       fields: {

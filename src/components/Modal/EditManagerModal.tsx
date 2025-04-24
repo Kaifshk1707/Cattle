@@ -11,13 +11,18 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { getEditUserList } from "../../config/dataServices/ManageUsers";
-
+type UserModalProps = {
+  modalVisible: boolean;
+  setModalVisible: (visible: boolean) => void;
+  selectedUser: any; 
+  onUserUpdated: () => void; 
+};
 const EditManagerModal = ({
   modalVisible,
   setModalVisible,
   selectedUser,
   onUserUpdated,
-}) => {
+}: UserModalProps) => {
   const navigation = useNavigation();
   const [status, setStatus] = useState("Active");
   const [userType, setUserType] = useState("User");

@@ -14,6 +14,7 @@ import InwardMedicine from "../components/InwardMedicine/InwardMedicine";
 import CreateNew from "../components/ManageTranactions/CreateNew";
 import History from "../components/ManageTranactions/History";
 import Edit from "../components/ManageTranactions/Edit";
+import AddMedicineScreen from "../components/InwardMedicine/AddMedicineScreen";
 
 
 
@@ -60,6 +61,7 @@ const MainAppStack = () => {
       {/* <Stack.Screen name="SettingScreen" component={SettingScreen} /> */}
       <Stack.Screen name="InwardMedicine" component={InwardMedicine} />
       <Stack.Screen name="AddUserScreen" component={AddUserScreen} />
+      <Stack.Screen name="AddMedicineScreen" component={AddMedicineScreen} />
     </Stack.Navigator>
   );
 };
