@@ -1,0 +1,81 @@
+npm install -g eas-cli
+eas build:configure
+eas build -p android --profile preview
+eas build -p android --profile preview --output-format apk
+✅ Step-by-Step Guide to Generate .apk in Expo
+🔧 Step 1: Install eas-cli
+Expo ke latest build system ka naam hai EAS (Expo Application Services). Pehle EAS CLI install karo:
+
+bash
+Copy
+Edit
+npm install -g eas-cli
+✅ eas command ka use karne ke liye Expo account hona chahiye. https://expo.dev/signup
+
+🛠️ Step 2: Configure your project for EAS
+Terminal mein project folder mein jaake yeh run karo:
+
+bash
+Copy
+Edit
+eas build:configure
+Yeh command eas.json file banayegi jo build configuration ke liye use hoti hai.
+
+📦 Step 3: Create the APK file
+APK generate karne ke liye run karo:
+
+bash
+Copy
+Edit
+eas build -p android --profile preview
+⚠️ Default mode me Expo ke server par build hota hai (cloud build). Internet chahiye hoga.
+
+-p android => Android app banana hai
+
+--profile preview => eas.json ke preview profile ke hisaab se build karega (default hota hai)
+
+Agar aap APK (not AAB) chahte ho, toh ek extra option do:
+
+bash
+Copy
+Edit
+eas build -p android --profile preview --output-format apk
+📥 Step 4: Download the APK
+Jab build complete ho jaayega, terminal mein download link milega:
+
+arduino
+Copy
+Edit
+✔ Build finished
+🔗 APK: https://expo.dev/artifacts/your-build-link.apk
+Is link se .apk download karo aur phone mein install karo.
+
+📝 Tips
+Agar aapne native modules use kiye hain (react-native-reanimated, react-native-camera, etc.), toh aapko development build ya custom dev client banana padta hai.
+
+Aap eas.json mein production, preview ya custom profiles bana sakte ho.
+
+eas.json file kuch aise dikhti hai:
+
+json
+Copy
+Edit
+{
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}
+
+How to Get the APK When It's Done
+Once the build is complete, terminal mein kuch aisa aayega:
+
+arduino
+Copy
+Edit
+✔ Build finished
+🔗 APK: https://expo.dev/artifacts/your-apk-link.apk
+📲 Click that link or paste it into a browser — download your APK and install it on your Android phone.
